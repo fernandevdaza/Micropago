@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,3 +40,6 @@ Route::apiResource('vehicles', VehicleController::class);
 
 // Transacciones (Pagos y Recargas)
 Route::apiResource('transactions', TransactionController::class);
+
+//Proceso de Pago
+Route::post('process-nfc-payment', [PaymentController::class, 'processPayment']);
