@@ -27,7 +27,6 @@ class UserController extends Controller
             'nfc_card_uid' => 'nullable|string',
         ]);
 
-        $validated['password'] = bcrypt($validated['password']);
         $user = User::create($validated);
 
         return new UserResource($user);
@@ -51,9 +50,7 @@ class UserController extends Controller
             'nfc_card_uid' => 'nullable|string',
         ]);
 
-        if (!empty($validated['password'])) {
-            $validated['password'] = bcrypt($validated['password']);
-        } else {
+        if (empty($validated['password'])) {
             unset($validated['password']);
         }
 

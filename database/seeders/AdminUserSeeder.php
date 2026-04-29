@@ -13,7 +13,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'admin@micropago.bo'],
             [
                 'name' => 'Admin MicroPago',
-                'password' => bcrypt('admin1234'),
+                'password' => 'admin1234',
                 'role' => 'admin',
                 'ci' => '00000000',
                 'date_of_birth' => '1990-01-01',
@@ -26,7 +26,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'pasajero@micropago.bo'],
             [
                 'name' => 'Pasajero Demo',
-                'password' => bcrypt('demo1234'),
+                'password' => 'demo1234',
                 'role' => 'passenger',
                 'ci' => '12345678',
                 'date_of_birth' => '2000-06-15',
@@ -39,7 +39,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'conductor@micropago.bo'],
             [
                 'name' => 'Conductor Demo',
-                'password' => bcrypt('demo1234'),
+                'password' => 'demo1234',
                 'role' => 'driver',
                 'ci' => '87654321',
                 'date_of_birth' => '1985-03-20',

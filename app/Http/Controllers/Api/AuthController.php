@@ -29,7 +29,6 @@ class AuthController extends Controller
         $user = User::create([
             ...$validated,
             'role' => 'passenger',
-            'password' => bcrypt($validated['password']),
         ]);
 
         $token = $user->createToken('micropago-token')->plainTextToken;
