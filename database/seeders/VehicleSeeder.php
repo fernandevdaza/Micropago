@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Database\Seeder;
 
 class VehicleSeeder extends Seeder
@@ -12,11 +13,19 @@ class VehicleSeeder extends Seeder
      */
     public function run(): void
     {
-        $vehicle = Vehicle::create([
-           'transport_line_id' => 1,
-           'driver_id' => 2,
-           'internal_number' => 5,
-           'license_plate_number' => '6089LHR',
-        ]);
+        $driver = User::where('role', 'driver')->first();
+
+        if (! $driver) {
+            return;
+        }
+
+        Vehicle::updateOrCreate(
+            ['license_plate' => '6089LHR'],
+            [
+                'transport_line_id' => 1,
+                'driver_id' => $driver->id,
+                'internal_number' => 5,
+            ]
+        );
     }
 }
