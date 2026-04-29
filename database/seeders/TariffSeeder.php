@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Tariff;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TariffSeeder extends Seeder
@@ -13,16 +12,8 @@ class TariffSeeder extends Seeder
      */
     public function run(): void
     {
-        $tariffs = [
-            ['name'=>'Regular',
-                'price'=>2.80],
-            ['name'=>'Estudiante',
-                'price'=>1],
-            ['name'=>'Tercera Edad',
-                'price'=>1],];
-
-        foreach ($tariffs as $tariff) {
-            Tariff::create($tariff);
-        }
+        Tariff::updateOrCreate(['name' => 'General'], ['price' => 2.80]);
+        Tariff::updateOrCreate(['name' => 'Estudiante'], ['price' => 1.50]);
+        Tariff::updateOrCreate(['name' => 'Tercera Edad'], ['price' => 0.00]);
     }
 }
