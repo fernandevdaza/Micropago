@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TransportLineResource;
 use App\Models\TransportLine;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,12 @@ class TransportLineController extends Controller
     }
     public function store(Request $request)
     {
-        $transportline = TransportLine::create($request->all());
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+        ]);
+
+        $transportline = TransportLine::create($validated);
         return new TransportLineResource($transportline);
     }
 
@@ -25,7 +31,12 @@ class TransportLineController extends Controller
     }
     public function update(Request $request, TransportLine $transportLine)
     {
-        $transportLine->update($request->all());
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string',
+            'description' => 'nullable|string',
+        ]);
+
+        $transportLine->update($validated);
         return new TransportLineResource($transportLine);
     }
     public function destroy(TransportLine $transportLine)

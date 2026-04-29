@@ -8,7 +8,7 @@ class Tariff extends Model
 {
     protected $fillable = ['name','price'];
 
-    protected function transaction()
+    public function transactions()
     {
         return $this->hasMany(Transaction::class,'tariff_id','id');
     }

@@ -3,34 +3,48 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Tariff;
-use App\Models\Vehicle;
 use App\Models\Transaction;
-use App\Enums\UserRole;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
+    /**
+     * Procesar un pago NFC desde el SoftPOS del conductor.
+     *
+     * Lee el nfc_card_uid del tag del pasajero, calcula la tarifa según edad,
+     * descuenta el saldo y registra la transacción de forma atómica.
+     *
+     * @response 200 { "message": "Pago exitoso", "passenger": "string", "tariff_applied": "General", "amount_paid": 2.80, "new_balance": 47.20, "transaction_id": 1 }
+     * @response 402 { "error": "Saldo insuficiente", "balance": 1.50, "required": 2.80 }
+     * @response 404 { "message": "NFC no registrado" }
+     * @response 500 { "error": "Configuración de tarifa no encontrada" }
+     */
     public function processPayment(Request $request)
     {
-        // 1. Validación básica de entrada
         $request->validate([
             'nfc_card_uid' => 'required|string|exists:users,nfc_card_uid',
-            'vehicle_id' => 'required|uuid|exists:vehicles,id',
+            'vehicle_id' => 'required|integer|exists:vehicles,id',
         ]);
 
-        // 2. Buscar al pasajero y calcular su edad
         $passenger = User::where('nfc_card_uid', $request->nfc_card_uid)->first();
+
+        if (!$passenger) {
+            return response()->json(['message' => 'NFC no registrado'], 404);
+        }
+
         $age = Carbon::parse($passenger->date_of_birth)->age;
 
-        // 3. Lógica dinámica de Tarifas
-        // Buscamos en la tabla 'tariffs' según la edad
         $tariffName = 'General';
-        if ($age < 25) $tariffName = 'Estudiante'; // Ejemplo: menores de 25
-        if ($age >= 60) $tariffName = 'Tercera Edad';
+
+        if ($age < 18) {
+            $tariffName = 'Estudiante';
+        } elseif ($age >= 60) {
+            $tariffName = 'Tercera Edad';
+        }
 
         $tariff = Tariff::where('name', $tariffName)->first();
 
@@ -38,7 +52,6 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Configuración de tarifa no encontrada'], 500);
         }
 
-        // 4. Validar Saldo Suficiente
         if ($passenger->balance < $tariff->price) {
             return response()->json([
                 'error' => 'Saldo insuficiente',
@@ -47,13 +60,10 @@ class PaymentController extends Controller
             ], 402);
         }
 
-        // 5. PROCESO ATÓMICO (DB Transaction)
         try {
             $transaction = DB::transaction(function () use ($passenger, $tariff, $request) {
-                // A. Descontar saldo al pasajero
                 $passenger->decrement('balance', $tariff->price);
 
-                // B. Crear el registro del pago
                 return Transaction::create([
                     'user_id' => $passenger->id,
                     'vehicle_id' => $request->vehicle_id,
@@ -61,9 +71,10 @@ class PaymentController extends Controller
                     'type' => 'payment',
                     'amount' => $tariff->price,
                     'status' => 'completed',
-                    'created_at' => now(),
                 ]);
             });
+
+            $passenger->refresh();
 
             return response()->json([
                 'message' => 'Pago exitoso',

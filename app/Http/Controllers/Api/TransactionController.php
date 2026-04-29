@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TariffResource;
+use App\Http\Resources\TransactionResource;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\VehicleResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 

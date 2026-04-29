@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\VehicleResource;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,14 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
-        $vehicle = Vehicle::create($request->all());
+        $validated = $request->validate([
+            'transport_line_id' => 'required|exists:transport_lines,id',
+            'driver_id' => 'required|exists:users,id',
+            'internal_number' => 'required|integer',
+            'license_plate' => 'required|string|unique:vehicles,license_plate',
+        ]);
+
+        $vehicle = Vehicle::create($validated);
         return new VehicleResource($vehicle);
     }
 
@@ -27,7 +35,14 @@ class VehicleController extends Controller
     }
     public function update(Request $request, Vehicle $vehicle)
     {
-        $vehicle->update($request->all());
+        $validated = $request->validate([
+            'transport_line_id' => 'sometimes|required|exists:transport_lines,id',
+            'driver_id' => 'sometimes|required|exists:users,id',
+            'internal_number' => 'sometimes|required|integer',
+            'license_plate' => 'sometimes|required|string|unique:vehicles,license_plate,' . $vehicle->id,
+        ]);
+
+        $vehicle->update($validated);
         return new VehicleResource($vehicle);
     }
     public function destroy(Vehicle $vehicle)
