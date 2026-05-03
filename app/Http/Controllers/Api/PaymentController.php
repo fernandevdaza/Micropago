@@ -12,17 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    /**
-     * Procesar un pago NFC desde el SoftPOS del conductor.
-     *
-     * Lee el nfc_card_uid del tag del pasajero, calcula la tarifa según edad,
-     * descuenta el saldo y registra la transacción de forma atómica.
-     *
-     * @response 200 { "message": "Pago exitoso", "passenger": "string", "tariff_applied": "General", "amount_paid": 2.80, "new_balance": 47.20, "transaction_id": 1 }
-     * @response 402 { "error": "Saldo insuficiente", "balance": 1.50, "required": 2.80 }
-     * @response 404 { "message": "NFC no registrado" }
-     * @response 500 { "error": "Configuración de tarifa no encontrada" }
-     */
     public function processPayment(Request $request)
     {
         $request->validate([

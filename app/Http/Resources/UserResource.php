@@ -18,12 +18,11 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'role' => $this->role, // Laravel serializará el Enum automáticamente
+            'role' => $this->role,
             'ci' => $this->ci,
             'date_of_birth' => $this->date_of_birth,
             'balance' => (float) $this->balance,
             'nfc_card_uid' => $this->nfc_card_uid,
-            // 'password' no se incluye por seguridad
         ];
     }
 }

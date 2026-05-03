@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-// CRUD MVP
+// CRUD
 Route::apiResource('users', UserController::class);
 Route::apiResource('tariffs', TariffController::class);
 Route::apiResource('transport-lines', TransportLineController::class);

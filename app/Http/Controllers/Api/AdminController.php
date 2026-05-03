@@ -11,12 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    /**
-     * Recargar saldo a un pasajero (solo Admin).
-     *
-     * @response 200 { "message": "Recarga exitosa", "user": {}, "transaction_id": 1 }
-     * @response 403 { "error": "Solo se puede recargar saldo a pasajeros" }
-     */
     public function recharge(Request $request)
     {
         $validated = $request->validate([

@@ -10,12 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    /**
-     * Registrar un nuevo pasajero.
-     *
-     * @response 201 { "user": {}, "token": "string" }
-     * @response 422 { "message": "Validation error", "errors": {} }
-     */
+
     public function register(Request $request)
     {
         $validated = $request->validate([

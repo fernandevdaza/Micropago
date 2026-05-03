@@ -18,7 +18,7 @@ class VehicleResource extends JsonResource
             'id' => $this->id,
             'internal_number' => $this->internal_number,
             'license_plate' => $this->license_plate,
-            // Relaciones: Solo se muestran si haces Vehicle::with('line', 'driver')->get()
+
             'transport_line' => new TransportLineResource($this->whenLoaded('transportLine')),
             'driver' => new UserResource($this->whenLoaded('driver')),
         ];

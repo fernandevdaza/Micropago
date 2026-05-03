@@ -21,7 +21,7 @@ class TransactionResource extends JsonResource
             'status' => $this->status,
             'created_at' => $this->created_at->toDateTimeString(),
 
-            // Relaciones
+
             'user' => new UserResource($this->whenLoaded('user')),
             'vehicle' => new VehicleResource($this->whenLoaded('vehicle')),
             'tariff' => new TariffResource($this->whenLoaded('tariff')),
