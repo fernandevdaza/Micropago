@@ -15,7 +15,7 @@ class HierarchySeeder extends Seeder
     public function run(): void
     {
         // 1. Asegurar Tarifas
-        Tariff::updateOrCreate(['name' => 'General'], ['price' => 2.00]);
+        Tariff::updateOrCreate(['name' => 'General'], ['price' => 2.80]);
         Tariff::updateOrCreate(['name' => 'Estudiante'], ['price' => 1.00]);
         Tariff::updateOrCreate(['name' => 'Tercera Edad'], ['price' => 1.00]);
 
