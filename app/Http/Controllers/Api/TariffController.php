@@ -11,38 +11,51 @@ class TariffController extends Controller
 {
     public function index()
     {
-        $tariffs = Tariff::all();
-        return TariffResource::collection($tariffs);
+        return TariffResource::collection(Tariff::all());
     }
 
     public function store(Request $request)
     {
+        if (!in_array($request->user()->role->value, ['admin', 'super_admin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $validated = $request->validate([
-            'name' => 'required|string|unique:tariffs,name',
+            'name'  => 'required|string|unique:tariffs,name',
             'price' => 'required|numeric|min:0',
         ]);
 
         $tariff = Tariff::create($validated);
         return new TariffResource($tariff);
     }
+
     public function show(Tariff $tariff)
     {
         return new TariffResource($tariff);
     }
+
     public function update(Request $request, Tariff $tariff)
     {
+        if (!in_array($request->user()->role->value, ['admin', 'super_admin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $validated = $request->validate([
-            'name' => 'sometimes|required|string|unique:tariffs,name,' . $tariff->id,
+            'name'  => 'sometimes|required|string|unique:tariffs,name,' . $tariff->id,
             'price' => 'sometimes|required|numeric|min:0',
         ]);
 
         $tariff->update($validated);
         return new TariffResource($tariff);
     }
-    public function destroy(Tariff $tariff)
-    {
-        $tariff->delete();
-        return response()->json(['message'=>'Eliminado Correctamente'], 204);
-    }
 
+    public function destroy(Request $request, Tariff $tariff)
+    {
+        if (!in_array($request->user()->role->value, ['admin', 'super_admin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        $tariff->delete();
+        return response()->json(['message' => 'Eliminado Correctamente'], 204);
+    }
 }

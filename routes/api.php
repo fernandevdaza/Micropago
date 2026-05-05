@@ -18,15 +18,15 @@ use Illuminate\Support\Facades\Route;
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-// CRUD
-Route::apiResource('users', UserController::class);
-Route::apiResource('tariffs', TariffController::class);
-Route::apiResource('transport-lines', TransportLineController::class);
-Route::apiResource('vehicles', VehicleController::class);
-Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);
-
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
+    // CRUD Protegido
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('tariffs', TariffController::class);
+    Route::apiResource('transport-lines', TransportLineController::class);
+    Route::apiResource('vehicles', VehicleController::class);
+    Route::apiResource('transactions', TransactionController::class)->only(['index', 'show']);
+
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::post('/auth/refresh', [AuthController::class, 'refresh']);
     Route::get('/auth/me', [AuthController::class, 'me']);

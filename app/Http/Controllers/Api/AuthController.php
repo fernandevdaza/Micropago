@@ -24,6 +24,7 @@ class AuthController extends Controller
         $user = User::create([
             ...$validated,
             'role' => 'passenger',
+            'nfc_card_uid' => strtoupper(bin2hex(random_bytes(4))),
         ]);
 
         $token = $user->createToken('micropago-token')->plainTextToken;

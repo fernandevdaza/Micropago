@@ -1,3 +1,6 @@
+# Technical Documentation
+DOCS_TEC/
+
 *.log
 .DS_Store
 .env

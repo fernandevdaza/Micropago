@@ -13,6 +13,10 @@ class AdminController extends Controller
 {
     public function recharge(Request $request)
     {
+        if (!in_array($request->user()->role->value, ['admin', 'super_admin'])) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:1',

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'date_of_birth',
         'balance',
         'nfc_card_uid',
+        'transport_line_id',
     ];
 
     protected $casts = [
@@ -30,6 +31,11 @@ class User extends Authenticatable
         'role' => UserRole::class,
         'date_of_birth' => 'date',
     ];
+
+    public function transportLine()
+    {
+        return $this->belongsTo(TransportLine::class);
+    }
 
     public function vehicles()
     {

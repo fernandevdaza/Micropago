@@ -9,9 +9,14 @@ use Illuminate\Http\Request;
 
 class TransportLineController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $transportlines = TransportLine::all();
+        if ($request->user()->role->value === 'line_admin') {
+            $transportlines = TransportLine::where('id', $request->user()->transport_line_id)->get();
+        } else {
+            $transportlines = TransportLine::all();
+        }
+
         return TransportLineResource::collection($transportlines);
     }
     public function store(Request $request)

@@ -22,7 +22,7 @@ class UserResource extends JsonResource
             'ci' => $this->ci,
             'date_of_birth' => $this->date_of_birth,
             'balance' => (float) $this->balance,
-            'nfc_card_uid' => $this->nfc_card_uid,
+            'nfc_card_uid' => $this->role->value === 'passenger' ? $this->nfc_card_uid : null,
         ];
     }
 }

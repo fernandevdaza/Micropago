@@ -14,6 +14,10 @@ class PaymentController extends Controller
 {
     public function processPayment(Request $request)
     {
+        if ($request->user()->role->value !== 'driver') {
+            return response()->json(['error' => 'Solo los conductores pueden procesar pagos'], 403);
+        }
+
         $request->validate([
             'nfc_card_uid' => 'required|string|exists:users,nfc_card_uid',
             'vehicle_id' => 'required|integer|exists:vehicles,id',
