@@ -11,16 +11,27 @@ class TransportLineController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->user()->role->value === 'line_admin') {
-            $transportlines = TransportLine::where('id', $request->user()->transport_line_id)->get();
-        } else {
-            $transportlines = TransportLine::all();
+        $user = $request->user();
+
+        if ($user->isSuperAdmin() || $user->isAdmin()) {
+            return TransportLineResource::collection(TransportLine::all());
         }
 
-        return TransportLineResource::collection($transportlines);
+        if ($user->isLineAdmin()) {
+            return TransportLineResource::collection(
+                TransportLine::where('id', $user->transport_line_id)->get()
+            );
+        }
+
+        return response()->json(['error' => 'No autorizado'], 403);
     }
+
     public function store(Request $request)
     {
+        if (!$request->user()->isSuperAdmin()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string',
             'description' => 'nullable|string',
@@ -32,10 +43,25 @@ class TransportLineController extends Controller
 
     public function show(TransportLine $transportLine)
     {
+        $user = request()->user();
+
+        if ($user->isLineAdmin() && !$user->belongsToLine($transportLine->id)) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
+        if (!$user->isPlatformOperator() && !$user->isLineAdmin()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         return new TransportLineResource($transportLine);
     }
+
     public function update(Request $request, TransportLine $transportLine)
     {
+        if (!$request->user()->isSuperAdmin()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'sometimes|required|string',
             'description' => 'nullable|string',
@@ -46,6 +72,10 @@ class TransportLineController extends Controller
     }
     public function destroy(TransportLine $transportLine)
     {
+        if (!request()->user()->isSuperAdmin()) {
+            return response()->json(['error' => 'No autorizado'], 403);
+        }
+
         $transportLine->delete();
         return response()->json(['message'=>'Eliminado Correctamente'], 204);
     }

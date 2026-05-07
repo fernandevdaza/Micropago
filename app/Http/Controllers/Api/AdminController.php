@@ -13,7 +13,7 @@ class AdminController extends Controller
 {
     public function recharge(Request $request)
     {
-        if (!in_array($request->user()->role->value, ['admin', 'super_admin'])) {
+        if (!$request->user()->isPlatformOperator()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -24,7 +24,7 @@ class AdminController extends Controller
 
         $user = User::findOrFail($validated['user_id']);
 
-        if ($user->role->value !== 'passenger') {
+        if (!$user->isPassenger()) {
             return response()->json(['error' => 'Solo se puede recargar saldo a pasajeros'], 403);
         }
 

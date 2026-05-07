@@ -14,6 +14,10 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $viewer = $request->user();
+        $canViewOwnPassengerUid = $this->role->value === 'passenger'
+            && ($viewer === null || $viewer->id === $this->id);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -22,7 +26,7 @@ class UserResource extends JsonResource
             'ci' => $this->ci,
             'date_of_birth' => $this->date_of_birth,
             'balance' => (float) $this->balance,
-            'nfc_card_uid' => $this->role->value === 'passenger' ? $this->nfc_card_uid : null,
+            'nfc_card_uid' => $canViewOwnPassengerUid ? $this->nfc_card_uid : null,
         ];
     }
 }

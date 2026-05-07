@@ -2,58 +2,49 @@
 
 namespace App\Policies;
 
+use App\Enums\UserRole;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role->value, ['super_admin', 'admin', 'line_admin']);
+        return $user->isPlatformOperator() || $user->isLineAdmin();
     }
 
     public function view(User $user, User $model): bool
     {
-        if (in_array($user->role->value, ['super_admin', 'admin'])) return true;
+        if ($user->isPlatformOperator()) {
+            return true;
+        }
 
-        return $user->role->value === 'line_admin' && $user->transport_line_id === $model->transport_line_id;
+        return $user->isLineAdmin() && $user->belongsToLine($model->transport_line_id);
     }
 
     public function create(User $user): bool
     {
-        return in_array($user->role->value, ['super_admin', 'admin', 'line_admin']);
+        return $user->isSuperAdmin() || $user->isLineAdmin();
     }
 
     public function update(User $user, User $model): bool
     {
-        if (in_array($user->role->value, ['super_admin', 'admin'])) return true;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
 
-        return $user->role->value === 'line_admin' && $user->transport_line_id === $model->transport_line_id;
+        return $user->isLineAdmin()
+            && $user->belongsToLine($model->transport_line_id)
+            && in_array($model->role, [UserRole::Driver, UserRole::LineAdmin], true);
     }
 
     public function delete(User $user, User $model): bool
     {
-        if (in_array($user->role->value, ['super_admin', 'admin'])) return true;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
 
-        return $user->role->value === 'line_admin' && $user->transport_line_id === $model->transport_line_id;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, User $model): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, User $model): bool
-    {
-        return false;
+        return $user->isLineAdmin()
+            && $user->belongsToLine($model->transport_line_id)
+            && in_array($model->role, [UserRole::Driver, UserRole::LineAdmin], true);
     }
 }

@@ -46,4 +46,41 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function isPassenger(): bool
+    {
+        return $this->role === UserRole::Passenger;
+    }
+
+    public function isDriver(): bool
+    {
+        return $this->role === UserRole::Driver;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === UserRole::SuperAdmin;
+    }
+
+    public function isLineAdmin(): bool
+    {
+        return $this->role === UserRole::LineAdmin;
+    }
+
+    public function isPlatformOperator(): bool
+    {
+        return $this->isAdmin() || $this->isSuperAdmin();
+    }
+
+    public function belongsToLine(?int $transportLineId): bool
+    {
+        return $this->transport_line_id !== null
+            && $transportLineId !== null
+            && $this->transport_line_id === $transportLineId;
+    }
 }
