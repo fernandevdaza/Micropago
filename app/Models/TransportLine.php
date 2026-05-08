@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TransportLine extends Model
 {
-    protected $fillable = ['name','description'];
+    use HasFactory;
 
-    protected function vehicle(){
-        return $this->hasMany(Vehicle::class,'transport_line_id','id');
+    protected $fillable = ['name', 'description'];
+
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'transport_line_id', 'id');
     }
 }

@@ -3,28 +3,20 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Payment\ProcessPaymentRequest;
 use App\Models\Tariff;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Vehicle;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-    public function processPayment(Request $request)
+    public function processPayment(ProcessPaymentRequest $request)
     {
         $driver = $request->user();
-
-        if (!$driver->isDriver()) {
-            return response()->json(['error' => 'Solo los conductores pueden procesar pagos'], 403);
-        }
-
-        $validated = $request->validate([
-            'nfc_card_uid' => 'required|string|exists:users,nfc_card_uid',
-            'vehicle_id' => 'required|integer|exists:vehicles,id',
-        ]);
+        $validated = $request->validated();
 
         $vehicle = Vehicle::where('driver_id', $driver->id)->first();
 

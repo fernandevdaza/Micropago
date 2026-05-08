@@ -15,18 +15,24 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         $viewer = $request->user();
-        $canViewOwnPassengerUid = $this->role->value === 'passenger'
-            && ($viewer === null || $viewer->id === $this->id);
+
+        // El NFC solo se expone al propio pasajero o a operadores de plataforma
+        $isPassenger = $this->role->value === 'passenger';
+        $isSelf      = $viewer !== null && $viewer->id === $this->id;
+        $isOperator  = $viewer !== null && $viewer->isPlatformOperator();
+
+        $showNfc = $isPassenger && ($isSelf || $isOperator);
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'role' => $this->role,
-            'ci' => $this->ci,
-            'date_of_birth' => $this->date_of_birth,
-            'balance' => (float) $this->balance,
-            'nfc_card_uid' => $canViewOwnPassengerUid ? $this->nfc_card_uid : null,
+            'id'                 => $this->id,
+            'name'               => $this->name,
+            'email'              => $this->email,
+            'role'               => $this->role,
+            'ci'                 => $this->ci,
+            'date_of_birth'      => $this->date_of_birth,
+            'balance'            => (float) $this->balance,
+            'transport_line_id'  => $this->transport_line_id,
+            'nfc_card_uid'       => $showNfc ? $this->nfc_card_uid : null,
         ];
     }
 }

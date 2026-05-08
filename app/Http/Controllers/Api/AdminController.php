@@ -3,24 +3,17 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\RechargeRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    public function recharge(Request $request)
+    public function recharge(RechargeRequest $request)
     {
-        if (!$request->user()->isPlatformOperator()) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
-        ]);
+        $validated = $request->validated();
 
         $user = User::findOrFail($validated['user_id']);
 
@@ -30,7 +23,6 @@ class AdminController extends Controller
 
         $transaction = DB::transaction(function () use ($user, $validated) {
             $user->increment('balance', $validated['amount']);
-
             return Transaction::create([
                 'user_id' => $user->id,
                 'vehicle_id' => null,

@@ -9,18 +9,12 @@ use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransportLineController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VehicleController;
-use App\Http\Resources\TransactionResource;
-use App\Models\Transaction;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Auth - rutas públicas
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-// Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
-    // CRUD Protegido
     Route::apiResource('users', UserController::class);
     Route::apiResource('tariffs', TariffController::class);
     Route::apiResource('transport-lines', TransportLineController::class);
@@ -33,15 +27,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/pay', [PaymentController::class, 'processPayment']);
     Route::post('/admin/recharge', [AdminController::class, 'recharge']);
-    Route::get('/driver/transactions', [DriverController::class, 'myTransactions']);
+
     Route::get('/driver/vehicle', [DriverController::class, 'myVehicle']);
-
-    Route::get('/passenger/transactions', function (Request $request) {
-        $transactions = Transaction::where('user_id', $request->user()->id)
-            ->with(['tariff', 'vehicle'])
-            ->latest()
-            ->get();
-
-        return TransactionResource::collection($transactions);
-    });
 });

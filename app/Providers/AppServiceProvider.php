@@ -31,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Vehicle::class, VehiclePolicy::class);
 
         Scramble::configure()
+            ->routes(function (\Illuminate\Routing\Route $route) {
+                return str_starts_with($route->uri, 'api/')
+                    && ! str_starts_with($route->uri, 'api/docs');
+            })
             ->withDocumentTransformers(function (OpenApi $openApi) {
                 $openApi->secure(
                     SecurityScheme::http('bearer')

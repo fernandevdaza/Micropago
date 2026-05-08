@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Tariff\StoreTariffRequest;
+use App\Http\Requests\Tariff\UpdateTariffRequest;
 use App\Http\Resources\TariffResource;
 use App\Models\Tariff;
 use Illuminate\Http\Request;
@@ -14,16 +16,9 @@ class TariffController extends Controller
         return TariffResource::collection(Tariff::all());
     }
 
-    public function store(Request $request)
+    public function store(StoreTariffRequest $request)
     {
-        if (!$request->user()->isSuperAdmin()) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-
-        $validated = $request->validate([
-            'name'  => 'required|string|unique:tariffs,name',
-            'price' => 'required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $tariff = Tariff::create($validated);
         return new TariffResource($tariff);
@@ -34,16 +29,9 @@ class TariffController extends Controller
         return new TariffResource($tariff);
     }
 
-    public function update(Request $request, Tariff $tariff)
+    public function update(UpdateTariffRequest $request, Tariff $tariff)
     {
-        if (!$request->user()->isSuperAdmin()) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-
-        $validated = $request->validate([
-            'name'  => 'sometimes|required|string|unique:tariffs,name,' . $tariff->id,
-            'price' => 'sometimes|required|numeric|min:0',
-        ]);
+        $validated = $request->validated();
 
         $tariff->update($validated);
         return new TariffResource($tariff);

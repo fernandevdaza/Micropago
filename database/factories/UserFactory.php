@@ -2,44 +2,73 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
-    protected static ?string $password;
-
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'name'             => fake()->name(),
+            'email'            => fake()->unique()->safeEmail(),
+            'password'         => 'password',
+            'role'             => UserRole::Passenger,
+            'ci'               => fake()->unique()->numerify('########'),
+            'date_of_birth'    => fake()->dateTimeBetween('-50 years', '-20 years')->format('Y-m-d'),
+            'balance'          => 0,
+            'nfc_card_uid'     => null,
+            'transport_line_id'=> null,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function passenger(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+        return $this->state([
+            'role'         => UserRole::Passenger,
+            'nfc_card_uid' => strtoupper(fake()->unique()->lexify('????????')),
+        ]);
+    }
+
+    public function driver(?int $lineId = null): static
+    {
+        return $this->state([
+            'role'              => UserRole::Driver,
+            'transport_line_id' => $lineId,
+        ]);
+    }
+
+    public function lineAdmin(?int $lineId = null): static
+    {
+        return $this->state([
+            'role'              => UserRole::LineAdmin,
+            'transport_line_id' => $lineId,
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(['role' => UserRole::Admin]);
+    }
+
+    public function superAdmin(): static
+    {
+        return $this->state(['role' => UserRole::SuperAdmin]);
+    }
+
+    public function withBalance(float $amount): static
+    {
+        return $this->state(['balance' => $amount]);
+    }
+
+    public function aged(int $years): static
+    {
+        return $this->state([
+            'date_of_birth' => now()->subYears($years)->format('Y-m-d'),
         ]);
     }
 }

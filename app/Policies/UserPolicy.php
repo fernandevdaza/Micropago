@@ -26,12 +26,10 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
-        // Nadie puede modificar un super_admin
         if ($model->isSuperAdmin()) return false;
 
         if ($user->isSuperAdmin()) return true;
 
-        // admin puede modificar cualquier usuario excepto admin y super_admin
         if ($user->isAdmin()) return !$model->isAdmin();
 
         return $user->isLineAdmin()
@@ -41,15 +39,12 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
-        // Nadie puede eliminarse a sí mismo
         if ($user->id === $model->id) return false;
 
-        // Nadie puede eliminar un super_admin
         if ($model->isSuperAdmin()) return false;
 
         if ($user->isSuperAdmin()) return true;
 
-        // admin puede eliminar cualquier usuario excepto admin y super_admin
         if ($user->isAdmin()) return !$model->isAdmin();
 
         return $user->isLineAdmin()

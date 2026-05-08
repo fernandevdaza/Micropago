@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TransportLine\StoreTransportLineRequest;
+use App\Http\Requests\TransportLine\UpdateTransportLineRequest;
 use App\Http\Resources\TransportLineResource;
 use App\Models\TransportLine;
 use Illuminate\Http\Request;
@@ -26,16 +28,9 @@ class TransportLineController extends Controller
         return response()->json(['error' => 'No autorizado'], 403);
     }
 
-    public function store(Request $request)
+    public function store(StoreTransportLineRequest $request)
     {
-        if (!$request->user()->isPlatformOperator()) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $transportline = TransportLine::create($validated);
         return new TransportLineResource($transportline);
@@ -56,16 +51,9 @@ class TransportLineController extends Controller
         return new TransportLineResource($transportLine);
     }
 
-    public function update(Request $request, TransportLine $transportLine)
+    public function update(UpdateTransportLineRequest $request, TransportLine $transportLine)
     {
-        if (!$request->user()->isPlatformOperator()) {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
-
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string',
-            'description' => 'nullable|string',
-        ]);
+        $validated = $request->validated();
 
         $transportLine->update($validated);
         return new TransportLineResource($transportLine);

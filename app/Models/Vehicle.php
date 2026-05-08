@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
-use App\Models\TransportLine;
 
 class Vehicle extends Model
 {
+    use HasFactory;
+
     protected $fillable = ['driver_id', 'internal_number', 'license_plate', 'transport_line_id'];
 
     public function driver()

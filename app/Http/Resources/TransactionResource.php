@@ -15,16 +15,17 @@ class TransactionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'type' => $this->type,
-            'amount' => (float) $this->amount,
-            'status' => $this->status,
+            'id'         => $this->id,
+            'user_id'    => $this->user_id,
+            'vehicle_id' => $this->vehicle_id,
+            'type'       => $this->type,
+            'amount'     => (float) $this->amount,
+            'status'     => $this->status,
             'created_at' => $this->created_at->toDateTimeString(),
 
-
-            'user' => new UserResource($this->whenLoaded('user')),
+            'user'    => new UserResource($this->whenLoaded('user')),
             'vehicle' => new VehicleResource($this->whenLoaded('vehicle')),
-            'tariff' => new TariffResource($this->whenLoaded('tariff')),
+            'tariff'  => new TariffResource($this->whenLoaded('tariff')),
         ];
     }
 }

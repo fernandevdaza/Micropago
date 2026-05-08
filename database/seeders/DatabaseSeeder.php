@@ -9,10 +9,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            TariffSeeder::class,
-            AdminUserSeeder::class,
-            TransportLineSeeder::class,
-            VehicleSeeder::class,
+            HierarchySeeder::class,
         ]);
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Vehicle\StoreVehicleRequest;
+use App\Http\Requests\Vehicle\UpdateVehicleRequest;
 use App\Http\Resources\VehicleResource;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -23,16 +25,9 @@ class VehicleController extends Controller
         return VehicleResource::collection($query->get());
     }
 
-    public function store(Request $request)
+    public function store(StoreVehicleRequest $request)
     {
-        $this->authorize('create', Vehicle::class);
-
-        $validated = $request->validate([
-            'transport_line_id' => 'required|exists:transport_lines,id',
-            'driver_id'         => 'required|exists:users,id',
-            'internal_number'   => 'required|integer',
-            'license_plate'     => 'required|string|unique:vehicles,license_plate',
-        ]);
+        $validated = $request->validated();
 
         if ($request->user()->isLineAdmin()) {
             $validated['transport_line_id'] = $request->user()->transport_line_id;
@@ -52,16 +47,9 @@ class VehicleController extends Controller
         return new VehicleResource($vehicle);
     }
 
-    public function update(Request $request, Vehicle $vehicle)
+    public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
     {
-        $this->authorize('update', $vehicle);
-
-        $validated = $request->validate([
-            'transport_line_id' => 'sometimes|required|exists:transport_lines,id',
-            'driver_id'         => 'sometimes|required|exists:users,id',
-            'internal_number'   => 'sometimes|required|integer',
-            'license_plate'     => 'sometimes|required|string|unique:vehicles,license_plate,' . $vehicle->id,
-        ]);
+        $validated = $request->validated();
 
         if ($request->user()->isLineAdmin()) {
             $validated['transport_line_id'] = $request->user()->transport_line_id;

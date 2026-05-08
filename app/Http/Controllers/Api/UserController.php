@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -23,19 +25,9 @@ class UserController extends Controller
         return UserResource::collection($query->get());
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        $this->authorize('create', User::class);
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'ci' => 'required|string|unique:users,ci',
-            'date_of_birth' => 'required|date|before:today',
-            'role' => 'required|in:passenger,driver,admin,super_admin,line_admin',
-            'transport_line_id' => 'nullable|exists:transport_lines,id',
-        ]);
-
+        $validated = $request->validated();
         $validated = $this->sanitizeUserPayload($request->user(), $validated);
 
         $user = User::create($validated);
@@ -50,18 +42,9 @@ class UserController extends Controller
         return new UserResource($user->load('transportLine'));
     }
 
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        $this->authorize('update', $user);
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'ci' => 'sometimes|required|string|unique:users,ci,' . $user->id,
-            'date_of_birth' => 'sometimes|required|date|before:today',
-            'role' => 'sometimes|required|in:passenger,driver,admin,super_admin,line_admin',
-            'transport_line_id' => 'sometimes|nullable|exists:transport_lines,id',
-        ]);
+        $validated = $request->validated();
 
         if (empty($validated['password'])) {
             unset($validated['password']);
