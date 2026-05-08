@@ -96,6 +96,22 @@ class UserController extends Controller
             abort(403, 'El rol super_admin no puede crearse ni modificarse desde este endpoint.');
         }
 
+        if ($actor->isAdmin()) {
+            if (in_array($role, [UserRole::Admin, UserRole::SuperAdmin], true)) {
+                abort(403, 'El admin no puede crear ni modificar roles admin o super_admin.');
+            }
+
+            if (in_array($role, [UserRole::Driver, UserRole::LineAdmin], true)) {
+                if (empty($validated['transport_line_id']) && $target?->transport_line_id === null) {
+                    abort(422, 'Los conductores y line_admin deben pertenecer a una línea.');
+                }
+            } else {
+                $validated['transport_line_id'] = null;
+            }
+
+            return $validated;
+        }
+
         if ($actor->isSuperAdmin()) {
             if ($role === UserRole::Admin) {
                 $validated['transport_line_id'] = null;

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
 
+    /**
+     * @unauthenticated
+     */
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -40,6 +43,10 @@ class AuthController extends Controller
      *
      * @response 200 { "user": {}, "token": "string" }
      * @response 401 { "message": "Credenciales incorrectas" }
+     */
+
+    /**
+     * @unauthenticated
      */
     public function login(Request $request)
     {

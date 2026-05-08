@@ -14,32 +14,26 @@ class VehiclePolicy
 
     public function view(User $user, Vehicle $vehicle): bool
     {
-        if ($user->isPlatformOperator()) {
-            return true;
-        }
+        if ($user->isPlatformOperator()) return true;
 
         return $user->isLineAdmin() && $user->belongsToLine($vehicle->transport_line_id);
     }
 
     public function create(User $user): bool
     {
-        return $user->isSuperAdmin() || $user->isLineAdmin();
+        return $user->isPlatformOperator() || $user->isLineAdmin();
     }
 
     public function update(User $user, Vehicle $vehicle): bool
     {
-        if ($user->isSuperAdmin()) {
-            return true;
-        }
+        if ($user->isPlatformOperator()) return true;
 
         return $user->isLineAdmin() && $user->belongsToLine($vehicle->transport_line_id);
     }
 
     public function delete(User $user, Vehicle $vehicle): bool
     {
-        if ($user->isSuperAdmin()) {
-            return true;
-        }
+        if ($user->isPlatformOperator()) return true;
 
         return $user->isLineAdmin() && $user->belongsToLine($vehicle->transport_line_id);
     }

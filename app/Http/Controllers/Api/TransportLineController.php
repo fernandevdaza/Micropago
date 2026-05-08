@@ -28,7 +28,7 @@ class TransportLineController extends Controller
 
     public function store(Request $request)
     {
-        if (!$request->user()->isSuperAdmin()) {
+        if (!$request->user()->isPlatformOperator()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -58,7 +58,7 @@ class TransportLineController extends Controller
 
     public function update(Request $request, TransportLine $transportLine)
     {
-        if (!$request->user()->isSuperAdmin()) {
+        if (!$request->user()->isPlatformOperator()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 

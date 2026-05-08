@@ -16,7 +16,7 @@ class TariffController extends Controller
 
     public function store(Request $request)
     {
-        if (!$request->user()->isPlatformOperator()) {
+        if (!$request->user()->isSuperAdmin()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -36,7 +36,7 @@ class TariffController extends Controller
 
     public function update(Request $request, Tariff $tariff)
     {
-        if (!$request->user()->isPlatformOperator()) {
+        if (!$request->user()->isSuperAdmin()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
@@ -51,7 +51,7 @@ class TariffController extends Controller
 
     public function destroy(Request $request, Tariff $tariff)
     {
-        if (!$request->user()->isPlatformOperator()) {
+        if (!$request->user()->isSuperAdmin()) {
             return response()->json(['error' => 'No autorizado'], 403);
         }
 
